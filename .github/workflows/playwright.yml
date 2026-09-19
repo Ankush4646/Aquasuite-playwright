@@ -35,13 +35,17 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT || 587 }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: 'AquaSuite smoke test failed'
+          subject: 'AquaSuite QA alert: smoke test failed'
           to: ${{ secrets.NOTIFY_EMAIL }}
           from: GitHub Actions <${{ secrets.SMTP_USERNAME }}>
           body: |
-            AquaSuite smoke test failed in GitHub Actions.
+            AquaSuite smoke test failed.
+
+            Environment: ${{ secrets.BASE_URL || 'https://app-qa.aquasuite.io/' }}
             Workflow: ${{ github.workflow }}
-            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Job: ${{ github.job }}
+            Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Triggered by: ${{ github.actor }}
       - name: Notify Slack on smoke failure
         if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
@@ -82,13 +86,17 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT || 587 }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: 'AquaSuite billing check failed'
+          subject: 'AquaSuite QA alert: billing check failed'
           to: ${{ secrets.NOTIFY_EMAIL }}
           from: GitHub Actions <${{ secrets.SMTP_USERNAME }}>
           body: |
-            AquaSuite billing automation failed in GitHub Actions.
+            AquaSuite billing automation failed.
+
+            Environment: ${{ secrets.BASE_URL || 'https://app-qa.aquasuite.io/' }}
             Workflow: ${{ github.workflow }}
-            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Job: ${{ github.job }}
+            Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Triggered by: ${{ github.actor }}
       - name: Notify Slack on billing failure
         if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
@@ -129,13 +137,17 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT || 587 }}
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: 'AquaSuite Playwright suite failed'
+          subject: 'AquaSuite QA alert: Playwright suite failed'
           to: ${{ secrets.NOTIFY_EMAIL }}
           from: GitHub Actions <${{ secrets.SMTP_USERNAME }}>
           body: |
-            AquaSuite Playwright suite failed in GitHub Actions.
+            AquaSuite Playwright suite failed.
+
+            Environment: ${{ secrets.BASE_URL || 'https://app-qa.aquasuite.io/' }}
             Workflow: ${{ github.workflow }}
-            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Job: ${{ github.job }}
+            Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Triggered by: ${{ github.actor }}
       - name: Notify Slack on suite failure
         if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
