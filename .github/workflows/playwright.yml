@@ -27,6 +27,21 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run smoke tests
         run: npx playwright test tests/smoke.spec.ts --project=chromium
+      - name: Email notification on smoke failure
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'AquaSuite smoke test failed'
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          from: GitHub Actions <${{ secrets.SMTP_USERNAME }}>
+          body: |
+            AquaSuite smoke test failed in GitHub Actions.
+            Workflow: ${{ github.workflow }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       - name: Notify Slack on smoke failure
         if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
@@ -39,6 +54,53 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: playwright-smoke-report
+          path: playwright-report/
+          retention-days: 14
+
+  billing-nightly:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: ${{ secrets.BASE_URL || 'https://app-qa.aquasuite.io/' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run billing tests
+        run: npx playwright test tests/billing --project=chromium
+      - name: Email notification on billing failure
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'AquaSuite billing check failed'
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          from: GitHub Actions <${{ secrets.SMTP_USERNAME }}>
+          body: |
+            AquaSuite billing automation failed in GitHub Actions.
+            Workflow: ${{ github.workflow }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      - name: Notify Slack on billing failure
+        if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"AquaSuite billing test failed in GitHub Actions."}' \
+            "$SLACK_WEBHOOK_URL"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-billing-report
           path: playwright-report/
           retention-days: 14
 
@@ -59,6 +121,21 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run full Playwright suite
         run: npx playwright test
+      - name: Email notification on suite failure
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: 'AquaSuite Playwright suite failed'
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          from: GitHub Actions <${{ secrets.SMTP_USERNAME }}>
+          body: |
+            AquaSuite Playwright suite failed in GitHub Actions.
+            Workflow: ${{ github.workflow }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       - name: Notify Slack on suite failure
         if: ${{ failure() && secrets.SLACK_WEBHOOK_URL != '' }}
         run: |
