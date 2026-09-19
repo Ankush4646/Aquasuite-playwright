@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Free Trial",
+    "status": "active",
+    "trialDays": 14
+  },
+  {
+    "name": "Pro",
+    "status": "inactive",
+    "trialDays": 0
+  }
+]

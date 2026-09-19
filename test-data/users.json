@@ -1,0 +1,14 @@
+[
+  {
+    "fullName": "Tenant Admin",
+    "email": "tenant-admin@aquasuite.test",
+    "role": "tenant_admin",
+    "password": "Password123!"
+  },
+  {
+    "fullName": "Tenant User",
+    "email": "tenant-user@aquasuite.test",
+    "role": "tenant_user",
+    "password": "Password123!"
+  }
+]

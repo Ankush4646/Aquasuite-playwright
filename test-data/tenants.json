@@ -1,0 +1,10 @@
+[
+  {
+    "name": "AquaSuite Demo Tenant",
+    "status": "active"
+  },
+  {
+    "name": "AquaSuite QA Tenant",
+    "status": "trial"
+  }
+]
